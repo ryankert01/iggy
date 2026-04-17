@@ -1,0 +1,16 @@
+{
+  "scenarioName": "doris-retry-once",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "second-attempt",
+  "request": {
+    "method": "PUT",
+    "urlPathPattern": "/api/events_retry/iggy_messages/_stream_load"
+  },
+  "response": {
+    "status": 500,
+    "jsonBody": {
+      "Status": "Fail",
+      "Message": "temporary error"
+    }
+  }
+}

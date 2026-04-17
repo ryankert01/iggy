@@ -18,6 +18,7 @@
  */
 
 mod api;
+mod doris;
 mod elasticsearch;
 mod fixtures;
 mod http;

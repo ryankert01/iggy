@@ -79,6 +79,7 @@ Each sink should have its own, custom configuration, which is passed along with 
 ### Available Sinks
 
 - **Elasticsearch Sink** - sends messages to Elasticsearch indices
+- **Doris Sink** - loads messages to Apache Doris tables via Stream Load API
 - **Iceberg Sink** - writes data to Apache Iceberg tables via REST catalog
 - **PostgreSQL Sink** - stores messages in PostgreSQL database tables
 - **Quickwit Sink** - indexes messages in Quickwit search engine

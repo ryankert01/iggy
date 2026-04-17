@@ -17,6 +17,7 @@
  * under the License.
  */
 
+mod doris;
 mod elasticsearch;
 mod http;
 mod iceberg;
@@ -26,6 +27,10 @@ mod postgres;
 mod quickwit;
 mod wiremock;
 
+pub use doris::{
+    DorisSinkFixture, DorisSinkMultiTopicFixture, DorisSinkNoMetadataFixture,
+    DorisSinkRawPayloadFixture, DorisSinkRetryFixture, DorisWireMockContainer,
+};
 pub use elasticsearch::{ElasticsearchSinkFixture, ElasticsearchSourcePreCreatedFixture};
 pub use http::{
     HttpSinkIndividualFixture, HttpSinkJsonArrayFixture, HttpSinkMultiTopicFixture,

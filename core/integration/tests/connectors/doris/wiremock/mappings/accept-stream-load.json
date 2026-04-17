@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "PUT",
+    "urlPathPattern": "/api/events/iggy_messages/_stream_load"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "Status": "Success",
+      "Message": "OK"
+    }
+  }
+}
