@@ -1,0 +1,81 @@
+# Local demo stack for the Doris sink connector. NOT part of the PR.
+#
+#   doris      - Apache Doris all-in-one (FE :8030, MySQL :9030, BE :8040)
+#   iggy       - Apache Iggy server     (HTTP :3000, TCP :8090)
+#   iggy-web   - Apache Iggy web UI      (:3050)
+#
+# The connector runtime itself runs on the HOST via `cargo run` (see README),
+# so the FE -> BE 307 redirect to 127.0.0.1:8040 resolves to the published BE
+# port. That's the bit that makes this work on macOS.
+
+services:
+  # Pinned to 2.1.0 all-in-one: the only single-container Doris that runs on
+  # Docker Desktop out of the box (it treats Doris's OS requirements as
+  # warnings). Trade-off: its bundled web Playground is broken. For the newer
+  # native web console, opt into Doris 4.0.3 with ./enable-doris-4.sh after
+  # reconfiguring Docker Desktop (see the "Doris 4.0.3" section in README.md).
+  doris:
+    image: apache/doris:doris-all-in-one-2.1.0
+    container_name: doris-demo
+    ports:
+      - "8030:8030"   # FE HTTP (Stream Load entry + web UI)
+      - "9030:9030"   # FE MySQL protocol
+      - "8040:8040"   # BE HTTP (307 redirect target) - MUST be 1:1
+    networks:
+      - demo
+
+  iggy:
+    image: apache/iggy:latest
+    container_name: iggy-demo
+    environment:
+      IGGY_ROOT_USERNAME: iggy
+      IGGY_ROOT_PASSWORD: iggy
+      IGGY_HTTP_ADDRESS: 0.0.0.0:3000
+      IGGY_TCP_ADDRESS: 0.0.0.0:8090
+    cap_add:
+      - SYS_NICE
+    security_opt:
+      - seccomp:unconfined
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "3000:3000"   # HTTP API (used by the web UI)
+      - "8090:8090"   # TCP (used by the connector runtime + iggy CLI)
+    networks:
+      - demo
+
+  iggy-web:
+    image: apache/iggy-web-ui:latest
+    container_name: iggy-web-demo
+    environment:
+      # PUBLIC_ vars are read by the browser, so this must be the host-reachable
+      # address of the iggy HTTP API, not the in-network container name.
+      PUBLIC_IGGY_API_URL: http://localhost:3000
+    ports:
+      - "3050:3050"
+    depends_on:
+      - iggy
+    networks:
+      - demo
+
+  # Browser DB viewer for the Doris side. Doris speaks the MySQL protocol on
+  # :9030, so Adminer connects straight to it. Use this instead of Doris's
+  # bundled web Playground, whose database picker is broken in the 2.1.0
+  # all-in-one image (it sends dbName=undefined).
+  # The Adminer image refuses blank passwords, so init-doris.sql creates a
+  # read-only 'viewer' user (password 'viewer') just for browsing.
+  #   http://localhost:8088  ->  System MySQL, Server doris:9030,
+  #                              user viewer, password viewer, DB iggy_demo
+  adminer:
+    image: adminer:latest
+    container_name: adminer-demo
+    ports:
+      - "8088:8080"
+    networks:
+      - demo
+
+networks:
+  demo:
+    name: iggy-doris-demo

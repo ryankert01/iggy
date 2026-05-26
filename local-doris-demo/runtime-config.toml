@@ -1,0 +1,53 @@
+# Top-level connector runtime config for the local demo.
+# Point the runtime at this file:
+#   IGGY_CONNECTORS_CONFIG_PATH=local-doris-demo/runtime-config.toml \
+#     cargo run --release --bin iggy-connectors
+
+[http]
+enabled = true
+address = "127.0.0.1:8081"
+api_key = ""
+
+[http.cors]
+enabled = false
+allowed_methods = ["GET", "POST", "PUT", "DELETE"]
+allowed_origins = ["*"]
+allowed_headers = ["content-type"]
+exposed_headers = [""]
+allow_credentials = false
+allow_private_network = false
+
+[http.tls]
+enabled = false
+cert_file = "core/certs/iggy_cert.pem"
+key_file = "core/certs/iggy_key.pem"
+
+[iggy]
+address = "localhost:8090"
+username = "iggy"
+password = "iggy"
+token = ""
+
+[iggy.tls]
+enabled = false
+ca_file = "core/certs/iggy_ca_cert.pem"
+domain = ""
+
+[state]
+path = "local-doris-demo/.runtime_state"
+
+[connectors]
+config_type = "local"
+config_dir = "/Users/ryankert/github/iggy/local-doris-demo/connectors"
+
+[telemetry]
+enabled = false
+service_name = "iggy-connectors"
+
+[telemetry.logs]
+transport = "grpc"
+endpoint = "http://localhost:4317"
+
+[telemetry.traces]
+transport = "grpc"
+endpoint = "http://localhost:4317"

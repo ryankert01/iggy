@@ -1,0 +1,30 @@
+# Doris sink connector definition, loaded by the runtime from this directory
+# (see runtime-config.toml -> [connectors].config_dir).
+
+type = "sink"
+key = "doris"
+enabled = true
+version = 0
+name = "Doris sink (local demo)"
+# Absolute path to the built cdylib. The runtime appends `.dylib` on macOS.
+path = "/Users/ryankert/github/iggy/target/release/libiggy_connector_doris_sink"
+plugin_config_format = "toml"
+verbose = false
+
+[[streams]]
+stream = "events"
+topics = ["doris_events"]
+schema = "json"
+batch_length = 100
+poll_interval = "100ms"
+consumer_group = "doris_sink"
+
+[plugin_config]
+fe_url = "http://localhost:8030"
+database = "iggy_demo"
+table = "events"
+username = "root"
+password = ""          # all-in-one root has no password
+label_prefix = "iggy"
+batch_size = 1000
+timeout_secs = 30

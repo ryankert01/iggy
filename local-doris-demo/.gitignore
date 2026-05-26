@@ -1,0 +1,2 @@
+# Connector runtime state written at run time (see runtime-config.toml)
+.runtime_state/
